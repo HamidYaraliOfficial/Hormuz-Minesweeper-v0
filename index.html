@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="description" content="یک بازی فکری مین‌روب روی نقشهٔ ماهواره‌ای و جغرافیایی تنگهٔ هرمز؛ موقعیت خطرها در هر دور تصادفی و ساختگی است." />
+<meta name="theme-color" content="#07111f" />
+<title>تنگه | عملیات خنثی‌سازی</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">✣</div>
+      <div><h1>تنگه | عملیات خنثی‌سازی</h1><p>بازی فکری روی نقشهٔ جغرافیایی واقعی</p></div>
+    </div>
+    <div class="top-right">
+      <div class="live-tag"><i class="live-dot"></i><span>محیط شبیه‌سازی فعال</span></div>
+      <button class="mini-btn" id="newGameTop" title="شروع مجدد">↻ بازی جدید</button>
+    </div>
+  </header>
+  <main class="main">
+    <aside class="sidebar">
+      <section class="panel">
+        <div class="panel-title"><span>وضعیت مأموریت</span><small id="statusText">آمادهٔ شروع</small></div>
+        <div class="stats">
+          <div class="stat"><div class="stat-head"><span>خطرهای باقی‌مانده</span><span class="stat-icon">✹</span></div><div class="stat-val red" id="mineCount">024</div></div>
+          <div class="stat"><div class="stat-head"><span>زمان سپری‌شده</span><span class="stat-icon">◷</span></div><div class="stat-val cyan" id="timer">00:00</div></div>
+          <div class="stat"><div class="stat-head"><span>خانه‌های باز</span><span class="stat-icon">▦</span></div><div class="stat-val green" id="revealedCount">000</div></div>
+          <div class="stat"><div class="stat-head"><span>بهترین زمان</span><span class="stat-icon">★</span></div><div class="stat-val gold" id="bestTime">—</div></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-title"><span>سطح دشواری</span><small>تعداد خطرها</small></div>
+        <div class="difficulty" role="group" aria-label="سطح دشواری">
+          <button data-level="easy">آسان<span>۱۸ خطر</span></button>
+          <button data-level="normal" class="active">معمولی<span>۲۸ خطر</span></button>
+          <button data-level="hard">سخت<span>۴۰ خطر</span></button>
+        </div>
+        <div class="actions">
+          <button class="primary" id="restartBtn">↻ شروع دوباره</button>
+          <button class="flag-mode" id="flagModeBtn">⚑ حالت پرچم: خاموش</button>
+        </div>
+      </section>
+      <section class="panel help-panel">
+        <div class="panel-title"><span>راهنمای بازی</span><small>مین‌روب کلاسیک</small></div>
+        <div class="instructions">
+          <div class="instruction"><div class="ic">☝</div><div><b>باز کردن خانه</b>روی یک خانه کلیک کن تا مشخص شود امن است یا نه. اولین انتخاب همیشه امن است.</div></div>
+          <div class="instruction"><div class="ic">⚑</div><div><b>علامت‌گذاری</b>راست‌کلیک کن یا «حالت پرچم» را روشن کن تا خانهٔ مشکوک علامت بخورد.</div></div>
+          <div class="instruction"><div class="ic">⑧</div><div><b>استفاده از عددها</b>هر عدد تعداد خطرها در هشت خانهٔ اطراف را نشان می‌دهد.</div></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-title"><span>علائم نقشه</span><small>راهنما</small></div>
+        <div class="legend"><span><i class="swatch safe"></i>خانهٔ باز</span><span><i class="swatch danger"></i>خطر</span><span><i class="swatch flag"></i>پرچم</span></div>
+      </section>
+    </aside>
+    <section class="map-shell" aria-label="نقشهٔ بازی">
+      <div id="map" class="map" role="application" aria-label="نقشهٔ تعاملی بازی"></div>
+      <noscript><div class="no-script">برای اجرای بازی، JavaScript را فعال کن.</div></noscript>
+      <div class="map-topline">
+        <div class="map-badge"><strong>محدودهٔ تنگهٔ هرمز</strong><span>شبکهٔ بازی روی نقشهٔ واقعی</span><span class="map-coords" id="coordText">26.6500° N · 56.1500° E</span></div>
+        <div class="map-toolset"><button id="zoomToBoard">◎ <span class="map-tools-label">نمای کامل محدوده</span></button><button id="toggleGrid">▦ <span class="map-tools-label">نمایش شبکه: روشن</span></button><button id="toggleBasemap">🛰 <span class="map-tools-label">نقشه: ماهواره‌ای</span></button></div>
+      </div>
+      <div class="map-bottomline"><div class="map-note"><b>یادآوری:</b> خطرها در هر دور تصادفی‌اند و موقعیت واقعی میدانی را نشان نمی‌دهند.</div><div class="scale-note">MAP VIEW / HORMUZ</div></div>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      <div class="end-overlay" id="endOverlay"><div class="end-card"><div class="end-icon" id="endIcon">✓</div><h2 id="endTitle">مأموریت کامل شد</h2><p id="endMessage">همهٔ خانه‌های امن را باز کردی.</p><button class="primary" id="playAgainBtn">بازی دوباره</button></div></div>
+    </section>
+  </main>
+  <footer class="footer"><span>نسخهٔ تمرینی · خطرهای ساختگی · مناسب بازی تک‌نفره</span><span>IMAGERY © ESRI · STREET MAP © OPENSTREETMAP / CARTO</span></footer>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="app.js"></script>
+</body>
+</html>
